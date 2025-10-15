@@ -46,7 +46,7 @@ Before running the deployment, ensure you have the following tools installed:
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd aperez-40Acres-test
+cd bitcoin-testnet-node
 
 # Make the deployment script executable
 chmod +x deploy-helm.sh
