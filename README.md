@@ -185,24 +185,3 @@ Or manually:
 ```bash
 kind delete cluster --name bitcoin-cluster
 ```
-
-## Production implemented features
-- Horizontal pod Autoscaling
-- Performance tuning
-- Advanced Indexing
-- Storage pruning optimization
-- Resource limits
-- Horizontal Pod Autoscaling (HPA)
-
-## Production not implemented features 
-Since this assignment is designed to deploy in local kubernetes some production settings couldn't be configured, for instance:
-
-- Secrets should not be hardcoded in code, they should be stored in Hashicorp Vault or AWS Secrets Manager or Kubernetes sealed secrets.
-
-- Load balancing with a Cloud Load balancer in front for high traffic scenarios.
-
-- Network enhanced security configuration should be set up (TLS, Cloudflare Rate limitting, Firewall...)
-
-- Taints and tolerations to set up specific nodes for Bitcoin pods.
-
-- Higher request limits for CPU and memory
