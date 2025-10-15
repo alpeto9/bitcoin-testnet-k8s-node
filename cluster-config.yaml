@@ -1,0 +1,23 @@
+# Kind Cluster Configuration
+# This file contains the Kind cluster configuration for the Bitcoin testnet node
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 30000
+    hostPort: 30000
+    protocol: TCP
+  - containerPort: 30001
+    hostPort: 30001
+    protocol: TCP
+  - containerPort: 18332
+    hostPort: 18332
+    protocol: TCP

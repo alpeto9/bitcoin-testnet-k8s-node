@@ -1,0 +1,10 @@
+FROM python:3.9-slim
+
+# Create the exporter script
+COPY bitcoin_exporter.py /app/bitcoin_exporter.py
+
+WORKDIR /app
+
+EXPOSE 8000
+
+CMD ["python3", "bitcoin_exporter.py"]

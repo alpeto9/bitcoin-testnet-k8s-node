@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-bitcoin-exporter
+  namespace: bitcoin
+  labels:
+    app: custom-bitcoin-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: custom-bitcoin-exporter
+  template:
+    metadata:
+      labels:
+        app: custom-bitcoin-exporter
+    spec:
+      containers:
+      - name: custom-bitcoin-exporter
+        image: bitcoin-exporter:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+          name: metrics
+        env:
+        - name: BITCOIN_HOST
+          value: "bitcoin-stack.bitcoin.svc.cluster.local"
+        - name: BITCOIN_PORT
+          value: "18332"
+        - name: BITCOIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: bitcoin-stack-auth
+              key: RPC_USERNAME
+        - name: BITCOIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bitcoin-stack-auth
+              key: RPC_PASSWORD
+        - name: BITCOIN_NETWORK
+          value: "testnet"
+        - name: BITCOIN_SERVICE_NAME
+          value: "bitcoin-stack"
+        - name: BITCOIN_NAMESPACE
+          value: "bitcoin"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10

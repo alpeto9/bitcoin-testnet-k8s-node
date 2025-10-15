@@ -1,0 +1,346 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Bitcoin Testnet Node Monitoring",
+    "tags": ["bitcoin", "testnet"],
+    "style": "dark",
+    "timezone": "browser",
+    "templating": {
+      "list": [
+        {
+          "name": "pod",
+          "type": "query",
+          "query": "label_values(bitcoin_blocks, pod)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "refresh": 1,
+          "includeAll": true,
+          "allValue": ".*",
+          "multi": true,
+          "current": {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          "hide": 0,
+          "label": "Bitcoin Pod",
+          "description": "Select Bitcoin pod(s) to monitor"
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Bitcoin Pods Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(bitcoin_pod_healthy)",
+            "legendFormat": "Total Bitcoin Pods",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "green",
+                  "value": 2
+                }
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Block Height",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "bitcoin_blocks{pod=~\"$pod\"}",
+            "legendFormat": "{{pod}} - Block Height",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Connected Peers",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "bitcoin_peers{pod=~\"$pod\"}",
+            "legendFormat": "{{pod}} - Connected Peers",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 3
+                },
+                {
+                  "color": "green",
+                  "value": 8
+                }
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Pod Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "bitcoin_pod_healthy{pod=~\"$pod\"}",
+            "legendFormat": "{{pod}} - Health",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "type": "value",
+                "value": "0",
+                "text": "Unhealthy"
+              },
+              {
+                "type": "value",
+                "value": "1",
+                "text": "Healthy"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
+      },
+      {
+        "id": 7,
+        "title": "Block Height Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "bitcoin_blocks{pod=~\"$pod\"}",
+            "legendFormat": "{{pod}} - Block Height",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 8,
+        "title": "Connected Peers Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "bitcoin_peers{pod=~\"$pod\"}",
+            "legendFormat": "{{pod}} - Connected Peers",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 9,
+        "title": "Network Connections",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "bitcoin_connections{pod=~\"$pod\"}",
+            "legendFormat": "{{pod}} - Network Connections",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 10,
+        "title": "Verification Progress",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "bitcoin_verification_progress{pod=~\"$pod\"} * 100",
+            "legendFormat": "{{pod}} - Verification Progress %",
+            "refId": "A",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            }
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

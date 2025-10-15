@@ -1,0 +1,44 @@
+ead# Kubernetes secrets and sensitive data
+*.key
+*.pem
+*.crt
+secrets/
+.env
+
+# Docker build cache
+.dockerignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Node modules (if any)
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Local development files
+local/
+dev/

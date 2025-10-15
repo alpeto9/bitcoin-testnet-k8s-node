@@ -1,0 +1,32 @@
+annotations:
+  artifacthub.io/images: |
+    - name: bitcoind
+      image: blockstream/bitcoind:27.2
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/kriegalex/k8s-charts/tree/main/charts/bitcoin-core
+    - name: Docker image source
+      url: https://github.com/Blockstream/bitcoin-images/tree/master/bitcoind
+apiVersion: v2
+appVersion: "27.2"
+description: 'A Helm chart for deploying a full Bitcoin stack: bitcoind, and more
+  to come.'
+home: https://bitcoincore.org/
+icon: https://bitcoin.org/img/icons/logotop.svg
+keywords:
+- bitcoin
+- cryptocurrency
+- blockchain
+- bitcoin-core
+- node
+maintainers:
+- email: kriegalex@gmail.com
+  name: kriegalex
+name: bitcoin-stack-custom
+sources:
+- https://github.com/Blockstream/bitcoin-images/tree/master/bitcoind
+- https://github.com/jamesob/docker-bitcoind
+- https://github.com/bitcoin/bitcoin
+- https://github.com/kriegalex/k8s-charts/tree/main/charts/bitcoin-core
+type: application
+version: 1.0.1-custom

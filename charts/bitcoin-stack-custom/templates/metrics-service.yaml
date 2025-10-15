@@ -1,0 +1,21 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bitcoind.fullname" . }}-metrics
+  labels:
+    {{- include "bitcoind.labels" . | nindent 4 }}
+  {{- with .Values.metrics.serviceAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.metrics.servicePort }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "bitcoind.selectorLabels" . | nindent 4 }}
+{{- end }}

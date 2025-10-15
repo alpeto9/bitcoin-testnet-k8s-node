@@ -1,0 +1,326 @@
+# -- Default values for Bitcoin Core.
+# This is a YAML-formatted file.
+
+image:
+  # -- Docker repository for Bitcoin Core image
+  repository: blockstream/bitcoind
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# -- Image pull secrets for private Docker registry
+imagePullSecrets: []
+# -- String to partially override bitcoin-core.fullname template
+nameOverride: ""
+# -- String to fully override bitcoin-core.fullname template
+fullnameOverride: ""
+
+# -- Number of replicas for the Bitcoin StatefulSet
+replicaCount: 1
+
+# -- Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+  # Scaling behavior configuration
+  scaleDownStabilizationWindowSeconds: 300  # 5 minutes
+  scaleDownPercent: 50
+  scaleDownPeriodSeconds: 60
+  scaleUpStabilizationWindowSeconds: 60     # 1 minute
+  scaleUpPercent: 100
+  scaleUpPeriodSeconds: 60
+
+# Bitcoin Core configuration
+bitcoind:
+  # -- Directory where Bitcoin Core stores blockchain data
+  # Replaces datadir in the configuration file
+  dataDir: "/root/.bitcoin"
+  # -- Path where bitcoin.conf should be mounted when using custom config
+  # Replaces conf in the configuration file
+  configFile: "/root/.bitcoin/bitcoin.conf"
+
+  # -- Enable testnet instead of mainnet
+  testnet: 0
+  # -- Enable regtest mode (local testing)
+  regtest: 0
+
+  # -- bitcoin.conf file content
+  # @description -- If provided, this will be mounted as a configuration file.
+  # The user and password come from the secret and are passed directly to the command.
+  # @default -- ""
+  config: |
+    server=1
+    txindex=1
+
+    chain=main
+    # chain=test
+    # chain=regtest
+    # chain=signet
+
+    rpcserialversion=0
+
+    rpcallowip=10.0.0.0/8
+    whitelist=10.0.0.0/8
+    rpcbind=0.0.0.0
+
+    dbcache=450
+    maxorphantx=100
+    maxmempool=300
+    nodebuglogfile=1
+
+  # RPC settings
+  rpc:
+    # -- Username for RPC authentication
+    user: "btc"
+    # -- Password for RPC authentication
+    # @description -- If not provided, a random password will be generated
+    # @default -- ""
+    password: "changeme"
+    # -- Port for RPC interface
+    rpcPort: 8332
+    # -- Port for P2P connections
+    port: 8333
+
+# Ingress configuration
+ingress:
+  # -- Enable ingress for Bitcoin Core RPC
+  enabled: false
+  # -- Ingress class name
+  # @default -- ""
+  className: ""
+  # -- Ingress annotations
+  # @default -- {}
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  # -- Ingress hosts configuration
+  # @default -- [{ host: bitcoin-rpc.local }]
+  hosts:
+    - host: bitcoin-rpc.local
+      paths:
+        - path: /
+          pathType: Prefix
+  # -- Ingress TLS configuration
+  # @default -- []
+  tls: []
+  #  - secretName: bitcoin-tls-secret
+  #    hosts:
+  #      - bitcoin-rpc.local
+
+# Persistent storage configuration for blockchain data
+persistence:
+  # -- Enable persistent storage for blockchain data
+  enabled: true
+  # -- Use an existing PVC
+  # @default -- ""
+  existingClaim: ""
+  # -- Storage class for the blockchain PVC
+  # @description -- If defined, storageClass: <storageClass>
+  # If set to "-", storageClass: "", which disables dynamic provisioning
+  # If undefined (the default) or set to null, no storageClassName spec is
+  # set, choosing the default provisioner
+  # @default -- ""
+  storageClass: ""
+  # -- Access modes for the PVC
+  accessModes:
+    - ReadWriteOnce
+  # -- Size of the PVC for blockchain data
+  size: 700Gi
+  # -- Annotations for the PVC
+  # @default -- {}
+  annotations: {}
+
+# Service configuration
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Use headless service for StatefulSet (enables individual pod access)
+  clusterIP: None
+
+# -- Resource requests and limits
+resources: {}
+  # requests:
+  #   cpu: 1
+  #   memory: 2Gi
+  # limits:
+  #   cpu: 4
+  #   memory: 8Gi
+
+# -- Node selector for pod assignment
+# @default -- {}
+nodeSelector: {}
+
+# -- Tolerations for pod assignment
+# @default -- []
+tolerations: []
+
+# -- Affinity for pod assignment
+# @default -- {}
+affinity: {}
+
+## Enable diagnostic mode in the deployment
+##
+diagnosticMode:
+  ## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
+  ##
+  enabled: false
+  ## @param diagnosticMode.command Command to override all containers in the deployment
+  ##
+  command:
+    - sleep
+  ## @param diagnosticMode.args Args to override all containers in the deployment
+  ##
+  args:
+    - infinity
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  # @default -- ""
+  name: ""
+
+# -- Annotations to add to pods
+podAnnotations: {}
+
+# Security context for the pod
+podSecurityContext:
+  # -- Enable pod security context
+  enabled: false
+  # -- Group ID to run the pod
+  fsGroup: 1000
+
+# Security context for the container
+securityContext:
+  # -- Enable security context
+  enabled: false
+  # -- Ensures container is not run as root
+  runAsNonRoot: true
+  # -- User ID to run the container
+  runAsUser: 1000
+  # -- Allow write access to root filesystem
+  readOnlyRootFilesystem: false
+
+# Volume permissions initialization
+volumePermissions:
+  # -- Enable an init container to set volume permissions
+  enabled: false
+  # -- Image to use for volume permissions init container
+  image: busybox
+  # -- Image pull policy for init container
+  pullPolicy: IfNotPresent
+  # -- Security context for volume permissions init container
+  securityContext:
+    enabled: true
+    runAsUser: 0
+
+# Pod probe configuration
+probes:
+  # Configure startup probe
+  startup:
+    # -- Enable startup probe
+    enabled: false
+    # -- Initial delay seconds
+    initialDelaySeconds: 30
+    # -- Period seconds
+    periodSeconds: 10
+    # -- Timeout seconds
+    timeoutSeconds: 5
+    # -- Failure threshold
+    failureThreshold: 30
+
+  # Configure liveness probe
+  liveness:
+    # -- Enable liveness probe
+    enabled: false
+    # -- Initial delay seconds
+    initialDelaySeconds: 60
+    # -- Period seconds
+    periodSeconds: 30
+    # -- Timeout seconds
+    timeoutSeconds: 5
+    # -- Failure threshold
+    failureThreshold: 3
+
+  # Configure readiness probe
+  readiness:
+    # -- Enable readiness probe
+    enabled: false
+    # -- Initial delay seconds
+    initialDelaySeconds: 30
+    # -- Period seconds
+    periodSeconds: 10
+    # -- Timeout seconds
+    timeoutSeconds: 5
+    # -- Success threshold
+    successThreshold: 1
+    # -- Failure threshold
+    failureThreshold: 3
+
+# Prometheus metrics configuration
+metrics:
+  # -- Enable Prometheus metrics exporter sidecar
+  enabled: false
+  # -- Container image for metrics
+  image: "prometheuscommunity/bitcoin-exporter:latest"
+  # -- Metrics image pull policy
+  pullPolicy: IfNotPresent
+  # -- Metrics container port
+  port: 9332
+  # -- Metrics service port
+  servicePort: 9332
+  # -- Resources for metrics container
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  # -- Metrics service annotations
+  serviceAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9332"
+
+# Network policy configuration
+networkPolicy:
+  # -- Enable network policy for Bitcoin Core
+  enabled: false
+  # -- Define which pods can access the Bitcoin RPC interface
+  # @default -- []
+  rpcAllowFrom: []
+  # -- Define which pods can access the Bitcoin P2P interface
+  # Leave empty to allow all pods to connect to P2P network
+  # @default -- []
+  p2pAllowFrom: []
+  # -- Allow Ingress controller to connect to Bitcoin RPC when using Ingress
+  allowIngressController: false
+  # -- Label key used to identify the Ingress controller namespace
+  ingressControllerNamespaceLabel: "kubernetes.io/metadata.name"
+  # -- Label value used to identify the Ingress controller namespace
+  ingressControllerNamespaceLabelValue: "ingress-nginx"
+
+# Pod Disruption Budget for high availability
+podDisruptionBudget:
+  # -- Enable PDB
+  enabled: false
+  # -- Minimum available pods
+  minAvailable: 1
+  # -- Maximum unavailable pods
+  maxUnavailable: null
+
+# -- Topology spread constraints for pod distribution
+topologySpreadConstraints: []
+  # - maxSkew: 1
+  #   topologyKey: topology.kubernetes.io/zone
+  #   whenUnsatisfiable: DoNotSchedule
+  #   labelSelector:
+  #     matchLabels:
+  #       app.kubernetes.io/name: bitcoind

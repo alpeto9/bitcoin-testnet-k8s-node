@@ -1,0 +1,21 @@
+# Bitcoin Testnet Node Monitoring Configuration
+# This file contains only frequently used configuration values (4+ times)
+
+# Cluster Configuration
+cluster:
+  name: "bitcoin-cluster"
+  config_file: "cluster-config.yaml"
+
+# Namespaces (used 4+ times)
+namespaces:
+  bitcoin: "bitcoin"
+  monitoring: "monitoring"
+
+# Bitcoin Release Name (used 4+ times)
+bitcoin:
+  release_name: "bitcoin-stack"
+
+# Grafana Admin Password (used 4+ times)
+monitoring:
+  grafana:
+    admin_password: "admin"

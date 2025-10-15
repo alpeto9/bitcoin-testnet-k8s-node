@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: custom-bitcoin-exporter
+  namespace: bitcoin
+  labels:
+    app: custom-bitcoin-exporter
+spec:
+  selector:
+    app: custom-bitcoin-exporter
+  ports:
+  - name: metrics
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  type: ClusterIP
